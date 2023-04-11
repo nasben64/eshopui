@@ -26,9 +26,9 @@ const Slider = () => {
         className="container"
         style={{ transform: `translateX(-${currentSlide * 100}vw)` }}
       >
-        <img src={data[0]} alt="" />
-        <img src={data[1]} alt="" />
-        <img src={data[2]} alt="" />
+        {data.map((d) => (
+          <img src={d} alt="" />
+        ))}
       </div>
       <div className="icons">
         <div className="icon" onClick={prevSlide}>
