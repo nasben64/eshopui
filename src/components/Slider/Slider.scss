@@ -2,9 +2,10 @@
   height: calc(80vh - 80px);
   width: 100vw;
   position: relative;
+  overflow: hidden;
 
   .container {
-    width: 300vw;
+    width: 600vw;
     height: 100%;
     display: flex;
     transition: all 1s ease;
