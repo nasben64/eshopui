@@ -21,8 +21,7 @@ The application has a user-friendly interface that allows users to browse throug
 
 The application uses the following technologies:
 
-## Node.js: a JavaScript runtime environment
-
+Node.js: a JavaScript runtime environment
 React: a JavaScript library for building user interfaces
 SASS: a preprocessor scripting language that is interpreted into Cascading Style Sheets (CSS)
 MUI-material-icons: a library of Material Design icons for React
