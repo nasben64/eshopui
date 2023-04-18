@@ -1,50 +1,69 @@
 import React from "react";
 import "./Cart.scss";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import { useDispatch, useSelector } from "react-redux";
+import { removeItem, resetCart } from "../../redux/cartReducer";
+import { loadStripe } from "@stripe/stripe-js";
+import { makeRequest } from "./../../makeRequest";
 
 const Cart = () => {
-  const data = [
-    {
-      id: 1,
-      img: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-      img2: "https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-      title: "Fashion",
-      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.",
-      isNew: true,
-      oldPrice: 120,
-      price: 100,
-    },
-    {
-      id: 2,
-      img: "https://images.unsplash.com/photo-1613784320918-0f45d025478b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=710&q=80",
-      img2: "https://images.unsplash.com/photo-1616994488535-d6ede04af436?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=749&q=80",
-      title: "coats",
-      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.",
-      isNew: true,
-      oldPrice: 19,
-      price: 15,
-    },
-  ];
+  const products = useSelector((state) => state.cart.products);
+
+  const dispatch = useDispatch();
+
+  const totalPrice = () => {
+    let total = 0;
+    products.forEach((item) => {
+      total += item.price * item.quantity;
+    });
+    return total.toFixed(2);
+  };
+
+  const stripePromise = loadStripe(
+    "pk_test_51MFG9yHkGLOZR9cAMUkjeMdlKTPjXKTYoXXmtJB30nZrf8nh3JY92vrZTWiw8aXjTpqL7XYgJagRRRq1DHLM9JIm00t30d7PR4"
+  );
+
+  const handlePayment = async () => {
+    try {
+      const stripe = await stripePromise;
+
+      const res = await makeRequest.post("/orders", { products });
+
+      await stripe.redirectToCheckout({
+        sessionId: res.data.stripeSession.id,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="cart">
       <h1>Products in your cart</h1>
-      {data.map((item) => (
+      {products.map((item) => (
         <div className="item" key={item.id}>
-          <img src={item.img} />
+          <img src={process.env.REACT_APP_UPLOAD_URL + item.img} />
           <div className="details">
             <h1>{item.title}</h1>
             <p>{item.desc?.substring(0, 100)}</p>
-            <div className="price"> 1 x ${item.price}</div>
+            <div className="price">
+              {" "}
+              {item.quantity} x ${item.price}
+            </div>
           </div>
-          <DeleteOutlineOutlinedIcon className="delete" />
+          <DeleteOutlineOutlinedIcon
+            className="delete"
+            onClick={() => dispatch(removeItem(item.id))}
+          />
         </div>
       ))}
       <div className="total">
         <span>SUBTOTAL</span>
-        <span>$123</span>
+        <span>${totalPrice()}</span>
       </div>
-      <button>PROCEED TO CHECKOUT</button>
-      <span className="reset">Reset Cart</span>
+      <button onClick={handlePayment}>PROCEED TO CHECKOUT</button>
+      <span className="reset" onClick={() => dispatch(resetCart())}>
+        Reset Cart
+      </span>
     </div>
   );
 };
