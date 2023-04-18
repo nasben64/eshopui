@@ -30,7 +30,7 @@ const Slider = () => {
         style={{ transform: `translateX(-${currentSlide * 100}vw)` }}
       >
         {data.map((d) => (
-          <img src={d} alt="" />
+          <img src={d} alt="" key={d} />
         ))}
       </div>
       <div className="icons">

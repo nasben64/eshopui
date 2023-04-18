@@ -8,7 +8,7 @@ const Products = () => {
   const catId = parseInt(useParams().id);
 
   const [maxPrice, setMaxPrice] = useState(1000);
-  const [sort, setSort] = useState(null);
+  const [sort, setSort] = useState("asc");
   const [selectedSubCats, setSelectedSubCats] = useState([]);
 
   const { data, loading, error } = useFetch(
@@ -61,6 +61,7 @@ const Products = () => {
               type="radio"
               id="asc"
               name="price"
+              defaultChecked={true}
               onChange={(e) => setSort("asc")}
             />
             <label htmlFor="asc">Price (Lowest First)</label>

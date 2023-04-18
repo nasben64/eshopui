@@ -41,16 +41,21 @@ const List = ({ subCats, maxPrice, sort, catId }) => {
   //   },
   // ];
 
-  const { data, loading, error } = useFetch(
-    `/products?populate=*&[filters][categories][id]=${catId}${subCats.map(
-      (item) => `&[filters][sub_categories][id][$eq]=${item}`
-    )}&[filters][price][$lte]=${maxPrice}&sort=price:${sort}`
-  );
+  let query = `/products?populate=*&[filters][categories][id]=${catId}${subCats.map(
+    (item) => `&[filters][sub_categories][id][$eq]=${item}`
+  )}&[filters][price][$lte]=${maxPrice}&sort=price:${sort}`;
+
+  // the map function returns an array of strings, so we need to remove the commas
+  query = query.replace(/,/g, "");
+
+  const { data, loading, error } = useFetch(query);
 
   return (
     <div className="list">
       {loading
         ? "loading..."
+        : error
+        ? "error"
         : data?.map((item) => <Card item={item} key={item.id} />)}
     </div>
   );
